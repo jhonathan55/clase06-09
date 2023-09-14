@@ -5,17 +5,18 @@ const { Pool } = require('pg');
 const fs=require('fs');
 const app = express();
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './uploads/');
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
     },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname);
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' +file.originalname);
     }
 });
 const upload = multer({ storage: storage });
 app.use(cors());
 app.use(express.json());
-app.listen(3000, () => console.log('Server started'));
+app.use('/uploads', express.static('uploads'));//faltaba agregar esta linea de codigo
+app.listen(3001, () => console.log('Server started'));
 
 const pool = new Pool({
     user: 'postgres',
@@ -106,6 +107,7 @@ app.delete('/posts/:id', async (req, res) => {
         res.status(500).json({ message: 'Something went wrong',error });
     }
 })
+
 
 
 
